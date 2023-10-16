@@ -39,6 +39,10 @@ library(patchwork)
 
 ## Mixed model Using Fringed-Lipped Bat Data
 
+[Link to Journal Article](https://link.springer.com/article/10.1007/s00114-022-01813-w)
+
+This study looked at fringe-lipped bats and their likelihood to switch prey items mid-flight in response to new prey signals introduced into their environment. They looked at individual bats, if they shifted prey focus mid-flight and their attack accuracy, capture success and latency. They also looked at the total time spent in attack flight.
+
 ![](images/images.jpg){width="308"}
 
 ```{r video, echo=FALSE, message=FALSE, warning=FALSE}
