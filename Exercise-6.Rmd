@@ -37,28 +37,38 @@ library(ggtext)
 library(patchwork)
 ```
 
-## R Markdown
+## Mixed model Using Fringed-Lipped Bat Data
 
-[Journal Article Link](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0186525)
+![](images/images.jpg){width="308"}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r video, echo=FALSE, message=FALSE, warning=FALSE}
+library(vembedr)
+embed_youtube("6095qsR8tt0")
+```
 
-## Including Plots
+## Looking at the Raw Data
 
-You can also embed plots, for example:
+I decided to take a quick look at a boxplot for the raw data of treatment, bat name and total time spent in flight. The data is a little difficult to interpret because there are so many individuals and treatments.
 
-```{r new upload}
+```{r new upload, message=FALSE, warning=FALSE, include=FALSE}
 bat<- read.csv("TC_Data.csv")
 bat$TotLatL<-as.numeric(bat$TotLatL)
 bat<-na.omit(bat) 
 ```
 
-```{r model}
+```{r plot raw, echo=FALSE, message=FALSE, warning=FALSE}
+p1b <- ggplot(bat, aes(x=Treatment, y=TotLatL, color=bat)) + 
+  geom_boxplot() +
+    labs( x="Treatment", y = "Time Spent in Flight")
+p1b
+```
+
+```{r model, echo=FALSE, message=FALSE, warning=FALSE}
 lmeModel <- lmer(TotLatL ~ Treatment*bat + (1|bat), data=bat)
 anova(lmeModel)
 ```
 
-```{r model summary}
+```{r model summary, message=FALSE, warning=FALSE}
 summary(lmeModel)
 ```
 
@@ -66,13 +76,12 @@ summary(lmeModel)
 performance::check_model(lmeModel)
 ```
 
-```{r emmeans}
-#calculate model-adjusted means (e.g. estimated marginal means)
+```{r emmeans, echo=TRUE, message=FALSE, warning=FALSE}
 bat_emm <- emmeans(lmeModel, "bat", "Treatment")
 bat_emm
 ```
 
-```{r Summary}
+```{r Summary, echo=TRUE, message=FALSE, warning=FALSE}
 summary <- bat %>%
   group_by(bat, TotLatL) %>%
   summarise(n = n(),
@@ -82,20 +91,18 @@ summary <- bat %>%
 summary
 ```
 
-```{r emmeans as dataframe}
+```{r emmeans as dataframe, message=FALSE, warning=FALSE, include=FALSE}
 data_emm <- as.data.frame(summary(bat_emm))
 
 data_emm
-#model-adjusted means (emm) are identical to raw means (see above) since nothing really being adjusted in fully balanced experiment.
+
 ```
 
-```{r}
+```{r New Plot, echo=FALSE, message=FALSE, warning=FALSE}
 p<- ggplot(data_emm, aes(x=Treatment, y=emmean, group=bat, color=bat)) + 
   geom_line() +
   geom_point(size=4)+
   geom_errorbar(aes(ymin=emmean-SE, ymax=emmean+SE), width=.2)+
-  labs(title="Distance Traveled Per Season (marginal means +/- 1 SE)", x="Season", y = "Distance Traveled (miles)")
+  labs( x="Treatment", y = "Time Spent in Flight")
 p
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
